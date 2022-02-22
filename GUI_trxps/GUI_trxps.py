@@ -28,6 +28,8 @@ from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 import addcopyfighandler
 
+import seaborn as sns
+
 import random
 
 from loadh5data import loadh5data
@@ -96,16 +98,24 @@ class GUI_Window(QMainWindow):
 		self.frame_pickedbunch = self.findChild(QFrame,'frame_pickedbunch')
 		self.frame_multiplot = self.findChild(QFrame,'frame_multiplot')
 		self.radioButton_first4 = self.findChild(QRadioButton,'radioButton_first4')
+		self.radioButton_first4.setChecked(True) #setting as default
 		self.radioButton_pick2 = self.findChild(QRadioButton,'radioButton_pick2')
+		self.radioButton_pick2.setEnabled(False)
 		
 # 		self.fig_frame_2dbunch = PlotCanvas(self.frame_2dbunch)
 # 		self.fig_frame_intspec = PlotCanvas(self.frame_intspec)
 # 		self.fig_frame_intspikes = PlotCanvas(self.frame_intspikes)
-		self.fig_frame_multiplot = PlotCanvas(self.frame_multiplot, multiplot_bool = True)
+		self.fig_frame_multiplot = MultiPlotCanvas(self.frame_multiplot)
 		self.fig_frame_pickedbunch = PlotCanvas(self.frame_pickedbunch)
 		
+		#%% Slice Viewer Tab
+		self.frame_2dspec = self.findChild(QFrame, 'frame_2dspec')
+		self.frame_tslice = self.findChild(QFrame, 'frame_tslice')
+		self.frame_eslice = self.findChild(QFrame, 'frame_eslice')
+		self.frame_bigspec = self.findChild(QFrame, 'frame_bigspec')
 		
-		
+		self.fig_frame_multiplot = MultiPlotCanvas(self.frame_multislice)
+		self.fig_frame_bigspec = PlotCanvas(self.frame_bigspec)
 		
 	#%% Slots
 	@pyqtSlot()
@@ -137,8 +147,10 @@ class GUI_Window(QMainWindow):
 				self.listWidget_runs.addItem(h5file)
 				added_item = self.listWidget_runs.findItems(h5file,Qt.MatchExactly)
 				itemrow = self.listWidget_runs.indexFromItem(added_item[0]).row()
-				
 				self.pathlist.append(h5path)
+				
+				if itemrow == 0:
+					self.list_select(itemrow)
 				
 			except:
 				self.statusBar().showMessage('Error Loading')
@@ -149,26 +161,36 @@ class GUI_Window(QMainWindow):
 		self.statusBar.showMessage('browsing runs')
 		
 	@pyqtSlot()
-	def list_select(self):
-		curritem = self.listWidget_runs.selectedItems()
-		currrow = self.listWidget_runs.currentRow()
+	def list_select(self, currrow = None):
+		
+		if currrow == None:
+			currrow = self.listWidget_runs.currentRow()
 		self.currpath = self.pathlist[currrow]
 		self.currfile = os.path.split(self.currpath)[1]
 		self.currfile_name = os.path.splitext(self.currfile)[0]
 		
 		self.raw2d, self.dfspec = loadh5data(self.currpath)
-		self.fig_frame_multiplot.raw2d = self.raw2d
-		self.fig_frame_multiplot.dfspec = self.dfspec
-		self.fig_frame_multiplot.currfile_name = self.currfile_name
+		
+		
 		self.update_tab_bunches()
 		
 	@pyqtSlot()
 	def update_tab_bunches(self):
 		
-		#need to give each frame instance raw2d and dfspec data
+		#Giving each frame instance access to data
+		self.fig_frame_multiplot.raw2d = self.raw2d
+		self.fig_frame_multiplot.dfspec = self.dfspec
+		self.fig_frame_multiplot.currfile_name = self.currfile_name
+		self.fig_frame_pickedbunch.raw2d = self.raw2d
+		self.fig_frame_pickedbunch.dfspec = self.dfspec
+		self.fig_frame_pickedbunch.currfile_name = self.currfile_name
+		self.fig_frame_pickedbunch.radioButton_first4 = self.radioButton_first4
+		
+		#Plot calls
 		self.fig_frame_multiplot.bigplot(self.fig_frame_multiplot.axbig)
 		self.fig_frame_multiplot.botplot(self.fig_frame_multiplot.axbot)
 		self.fig_frame_multiplot.rightplot(self.fig_frame_multiplot.axright)
+		self.fig_frame_pickedbunch.bunchspecplot(self.fig_frame_pickedbunch.axh)
 		
 	#%% Methods
 # 	def mousePressEvent(self, event: QMouseEvent):
@@ -200,7 +222,7 @@ class GUI_Window(QMainWindow):
 #%% Plot class
 class PlotCanvas(FigureCanvas):
 	
-	def __init__(self, frame, currfile_name = None, multiplot_bool = False, dpi=100):
+	def __init__(self, frame, currfile_name = None, dpi=100):
 		super().__init__()
 		#Basic Properties
 		width = frame.width()
@@ -211,53 +233,75 @@ class PlotCanvas(FigureCanvas):
 		self.setParent(frame)
 		self.setFixedSize(width, height)
 		
-		if multiplot_bool == True:
-			
-			spec = self.canvas.figure.add_gridspec(nrows = 3, ncols = 3)
-			self.axbot = self.figure.add_subplot(spec[2,0:2])
-			self.axbig = self.figure.add_subplot(spec[0:2, 0:2], sharex= self.axbot)
-			self.axright = self.figure.add_subplot(spec[0:2,2], sharey = self.axbig)
-			self.axbig.tick_params('x',labelbottom=False)
-			self.axright.tick_params('y',labelleft=False)
-			self.figure.set_tight_layout(True)
-			
-			cid = self.axbig.figure.canvas.mpl_connect('button_release_event', self.onrelease)
-			
-		else:
-			self.axh = self.figure.add_subplot()
-			cid = self.axh.figure.canvas.mpl_connect('button_release_event', self.onrelease)
+		
+		self.axh = self.figure.add_subplot()
+		cid = self.axh.figure.canvas.mpl_connect('button_release_event', self.onrelease)
 		
 		FigureCanvas.setSizePolicy(self, QSizePolicy.Expanding, QSizePolicy.Expanding)
 		FigureCanvas.updateGeometry(self)
 		
-# 		self.ax = self.figure.gca()
+	def onrelease(self, event):
+		# 3 for right click
+		if event.button != 3:
+			return
 		
+		contextMenu = QMenu(self)
+		PlotSeparately = contextMenu.addAction('Plot Figure Separately')
+		SavePlot = contextMenu.addAction('Save This Plot')
 		
-# class MultiPlotCanvas(FigureCanvas):
-# 	def __init__(self, frame, currfile_name = None, dpi=100):
-# 		super().__init__()
-# 		# Basic Properties
-# 		width = frame.width()
-# 		height = frame.height()
-# 		fig = Figure(figsize=(width, height), dpi=dpi)
-# 		
-# 		self.canvas = FigureCanvas(fig)
-# 		self.setParent(frame)
-# 		self.setFixedSize(width, height)
-# 		
-# 		spec = self.canvas.figure.add_gridspec(nrows = 3, ncols = 3)
-# 		self.axbot = self.figure.add_subplot(spec[2,0:2])
-# 		self.axbig = self.figure.add_subplot(spec[0:2, 0:2], sharex= self.axbot)
-# 		self.axright = self.figure.add_subplot(spec[0:2,2], sharey = self.axbig)
-# 		self.axbig.tick_params('x',labelbottom=False)
-# 		self.axright.tick_params('y',labelleft=False)
-# 		
-# 		self.figure.set_tight_layout(True)
-# 		
-# 		FigureCanvas.setSizePolicy(self, QSizePolicy.Expanding, QSizePolicy.Expanding)
-# 		FigureCanvas.updateGeometry(self)
-# 		
-# 		cid = self.axbig.figure.canvas.mpl_connect('button_release_event', self.onrelease)
+		action = contextMenu.exec_(self.mapToGlobal(QPoint(event.x, self.height() - event.y)))
+		if action == PlotSeparately:
+			tempfig, tempax = plt.subplots()
+			self.bunchspecplot(tempax)
+			
+		elif action == SavePlot:
+			pass
+		
+	def bunchspecplot(self,axh):
+		axh.clear()
+		
+		df = self.dfspec
+		
+		if self.radioButton_first4.isChecked():
+			for bunch in range(4):
+				axh.plot(df.index.values, df.iloc[:,bunch])
+			axh.legend(['1','2','3','4'])
+			axh.set_xlabel('DLD Channel')
+			axh.set_ylabel('Counts')
+			
+		elif self.radioButton_pick2.isChecked():
+			### Uncertain if this is useful anymore, perhaps remove this bit
+			#Grab 1st
+			axh.plot(df.index.values, df.iloc[:,bunch])
+			#Grab 2nd
+			
+		self.draw()
+		
+class MultiPlotCanvas(FigureCanvas):
+	def __init__(self, frame, currfile_name = None, dpi=100):
+		super().__init__()
+		# Basic Properties
+		width = frame.width()
+		height = frame.height()
+		fig = Figure(figsize=(width, height), dpi=dpi)
+		
+		self.canvas = FigureCanvas(fig)
+		self.setParent(frame)
+		self.setFixedSize(width, height)
+		
+		spec = self.canvas.figure.add_gridspec(nrows = 3, ncols = 3)
+		self.axbot = self.figure.add_subplot(spec[2,0:2])
+		self.axbig = self.figure.add_subplot(spec[0:2, 0:2], sharex= self.axbot)
+		self.axright = self.figure.add_subplot(spec[0:2,2], sharey = self.axbig)
+		self.axbig.tick_params('x',labelbottom=False)
+		self.axright.tick_params('y',labelleft=False)
+		
+		self.figure.set_tight_layout(True)
+		
+		FigureCanvas.setSizePolicy(self, QSizePolicy.Expanding, QSizePolicy.Expanding)
+		FigureCanvas.updateGeometry(self)
+		
+		cid = self.axbig.figure.canvas.mpl_connect('button_release_event', self.onrelease)
 	
 	def onrelease(self, event):
 		# 3 for right click
@@ -282,14 +326,14 @@ class PlotCanvas(FigureCanvas):
 				self.rightplot(tempax)
 			
 		elif action == SavePlot:
-			if self.axbig.contains(event)[0]:
+			if self.axbig.contains(event)[0] or self.axbot.contains(event)[0] or self.axright.contains(event)[0]:
 				self.axbig.figure.savefig('2dBunchPattern_' + self.currfile_name)
 				
-			elif self.axbot.contains(event)[0]:
-				self.axbot.figure.savefig('IntegratedBunchSpectrum_' + self.currfile_name)
-				
-			elif self.axright.contains(event)[0]:
-				self.axright.figure.savefig('IntegratedTimeSpikes_' + self.currfile_name)
+# 			elif self.axbot.contains(event)[0]:
+# 				self.axbot.figure.savefig('IntegratedBunchSpectrum_' + self.currfile_name)
+# 				
+# 			elif self.axright.contains(event)[0]:
+# 				self.axright.figure.savefig('IntegratedTimeSpikes_' + self.currfile_name)
 		
 		
 	def bigplot(self, axh):

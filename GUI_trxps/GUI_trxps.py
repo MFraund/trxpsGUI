@@ -114,8 +114,8 @@ class GUI_Window(QMainWindow):
 		self.frame_eslice = self.findChild(QFrame, 'frame_eslice')
 		self.frame_bigspec = self.findChild(QFrame, 'frame_bigspec')
 		
-		self.fig_frame_multiplot = MultiPlotCanvas(self.frame_multislice)
-		self.fig_frame_bigspec = PlotCanvas(self.frame_bigspec)
+# 		self.fig_frame_multiplot = MultiPlotCanvas(self.frame_multislice)
+# 		self.fig_frame_bigspec = PlotCanvas(self.frame_bigspec)
 		
 	#%% Slots
 	@pyqtSlot()

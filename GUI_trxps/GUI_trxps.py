@@ -7,6 +7,7 @@ Created on Wed Jan 19 04:37:21 2022
 import sys
 import os
 import io
+import pdb
 
 from PyQt5 import uic
 
@@ -29,6 +30,7 @@ import matplotlib.pyplot as plt
 import addcopyfighandler
 
 import seaborn as sns
+import pandas as pd
 
 import random
 
@@ -44,6 +46,11 @@ class GUI_Window(QMainWindow):
 		self.initUI()
 		
 	def initUI(self):
+		#%% initial placeholders
+		self.currfile_name = None
+		self.raw2d = pd.DataFrame()
+		self.dfspec = pd.DataFrame()
+		
 		#find widgets in xml file
 		#%% addruns box
 		#elements
@@ -88,36 +95,57 @@ class GUI_Window(QMainWindow):
 		self.groupBox_runparams = self.findChild(QGroupBox,'groupBox_runparams')
 		self.label_PSval = self.findChild(QLabel,'label_PSval')
 		self.label_t0val = self.findChild(QLabel,'label_t0val')
+		
 		self.lineEdit_PSval = self.findChild(QLineEdit,'lineEdit_PSval')
 		self.lineEdit_t0val = self.findChild(QLineEdit,'lineEdit_t0val')
+		self.lineEdit_bunchval = self.findChild(QLineEdit, 'lineEdit_bunchval')
 		
 		#%% Bunch Viewer Tab
-		self.frame_2dbunch = self.findChild(QFrame,'frame_2dbunch')
-		self.frame_intspec = self.findChild(QFrame,'frame_intspec')
-		self.frame_intspikes = self.findChild(QFrame,'frame_intspikes')
-		self.frame_pickedbunch = self.findChild(QFrame,'frame_pickedbunch')
-		self.frame_multiplot = self.findChild(QFrame,'frame_multiplot')
+		self.tabWidget = self.findChild(QTabWidget, 'tabWidget_main')
+		
 		self.radioButton_first4 = self.findChild(QRadioButton,'radioButton_first4')
 		self.radioButton_first4.setChecked(True) #setting as default
 		self.radioButton_pick2 = self.findChild(QRadioButton,'radioButton_pick2')
 		self.radioButton_pick2.setEnabled(False)
 		
+# 		self.frame_2dbunch = self.findChild(QFrame,'frame_2dbunch')
+# 		self.frame_intspec = self.findChild(QFrame,'frame_intspec')
+# 		self.frame_intspikes = self.findChild(QFrame,'frame_intspikes')
+		self.frame_pickedbunch = self.findChild(QFrame,'frame_pickedbunch')
+		self.frame_multi_bunchplot = self.findChild(QFrame,'frame_multi_bunchplot')
+		
 # 		self.fig_frame_2dbunch = PlotCanvas(self.frame_2dbunch)
 # 		self.fig_frame_intspec = PlotCanvas(self.frame_intspec)
 # 		self.fig_frame_intspikes = PlotCanvas(self.frame_intspikes)
-		self.fig_frame_multiplot = MultiPlotCanvas(self.frame_multiplot)
-		self.fig_frame_pickedbunch = PlotCanvas(self.frame_pickedbunch)
+		
 		
 		#%% Slice Viewer Tab
-		self.frame_2dspec = self.findChild(QFrame, 'frame_2dspec')
-		self.frame_tslice = self.findChild(QFrame, 'frame_tslice')
-		self.frame_eslice = self.findChild(QFrame, 'frame_eslice')
+# 		self.frame_2dspec = self.findChild(QFrame, 'frame_2dspec')
+# 		self.frame_tslice = self.findChild(QFrame, 'frame_tslice')
+# 		self.frame_eslice = self.findChild(QFrame, 'frame_eslice')
+		self.frame_multislice = self.findChild(QFrame, 'frame_multislice')
 		self.frame_bigspec = self.findChild(QFrame, 'frame_bigspec')
 		
-# 		self.fig_frame_multiplot = MultiPlotCanvas(self.frame_multislice)
-# 		self.fig_frame_bigspec = PlotCanvas(self.frame_bigspec)
+		
+		
+		#%% Spectral Shifts Tab
+		self.frame_specshift = self.findChild(QFrame, 'frame_specshift')
+		
+		self.init_figcanvas()
+		
 		
 	#%% Slots
+	
+	def init_figcanvas(self):
+		self.fig_frame_multi_bunchplot = MultiPlotCanvas(self.frame_multi_bunchplot)
+		self.fig_frame_pickedbunch = PlotCanvas(self.frame_pickedbunch)
+		
+		self.fig_frame_multislice = MultiPlotCanvas(self.frame_multislice)
+		self.fig_frame_bigspec = PlotCanvas(self.frame_bigspec)
+		
+		self.fig_frame_specshift = PlotCanvas(self.frame_specshift)
+		
+		
 	@pyqtSlot()
 	def test_click(self):
 		self.statusBar().showMessage('test button click')
@@ -132,10 +160,10 @@ class GUI_Window(QMainWindow):
 		day = self.spinBox_day.value()
 		run = self.spinBox_run.value()
 		
-		
+		scanfolder = 'PS_Scan_' + str(year) + str(month) + str(day) + '-run' + f'{run:03d}'
 		h5file = str(year) + str(month) + str(day) + '-run' + f'{run:03d}' + '.h5'
 		
-		
+		scanpath = os.path.join(workingdir, scanfolder)
 		h5path = os.path.join(workingdir, h5file)
 		
 		
@@ -177,20 +205,40 @@ class GUI_Window(QMainWindow):
 	@pyqtSlot()
 	def update_tab_bunches(self):
 		
+# 		self.init_figcanvas()
+		
 		#Giving each frame instance access to data
-		self.fig_frame_multiplot.raw2d = self.raw2d
-		self.fig_frame_multiplot.dfspec = self.dfspec
-		self.fig_frame_multiplot.currfile_name = self.currfile_name
-		self.fig_frame_pickedbunch.raw2d = self.raw2d
-		self.fig_frame_pickedbunch.dfspec = self.dfspec
-		self.fig_frame_pickedbunch.currfile_name = self.currfile_name
+		#This part seems a bit cumbersome, perhaps it can be fixed better than this?
+		
+		#Bunch Viewer Tab
+# 		self.fig_frame_multi_bunchplot.raw2d = self.raw2d
+# 		self.fig_frame_multi_bunchplot.dfspec = self.dfspec
+# 		self.fig_frame_multi_bunchplot.currfile_name = self.currfile_name
+# 		self.fig_frame_pickedbunch.raw2d = self.raw2d
+# 		self.fig_frame_pickedbunch.dfspec = self.dfspec
+# 		self.fig_frame_pickedbunch.currfile_name = self.currfile_name
 		self.fig_frame_pickedbunch.radioButton_first4 = self.radioButton_first4
 		
+		#Slice Viewer Tab
+# 		self.fig_frame_multislice.raw2d = self.raw2d
+# 		self.fig_frame_multislice.dfspec = self.dfspec
+# 		self.fig_frame_multislice.currfile_name = self.currfile_name
+# 		self.fig_frame_bigspec.raw2d = self.raw2d
+# 		self.fig_frame_bigspec.dfspec = self.dfspec
+# 		self.fig_frame_bigspec.currfile_name = self.currfile_name
+		
+		#Spectral Shifts Tab
+		
 		#Plot calls
-		self.fig_frame_multiplot.bigplot(self.fig_frame_multiplot.axbig)
-		self.fig_frame_multiplot.botplot(self.fig_frame_multiplot.axbot)
-		self.fig_frame_multiplot.rightplot(self.fig_frame_multiplot.axright)
+		self.fig_frame_multi_bunchplot.bigplot(self.fig_frame_multi_bunchplot.axbig)
+		self.fig_frame_multi_bunchplot.botplot(self.fig_frame_multi_bunchplot.axbot)
+		self.fig_frame_multi_bunchplot.rightplot(self.fig_frame_multi_bunchplot.axright)
 		self.fig_frame_pickedbunch.bunchspecplot(self.fig_frame_pickedbunch.axh)
+		
+		self.fig_frame_multislice.bigplot_slice(self.fig_frame_multislice.axbig)
+		self.fig_frame_multislice.botplot_slice(self.fig_frame_multislice.axbot)
+		self.fig_frame_multislice.rightplot_slice(self.fig_frame_multislice.axright)
+		self.fig_frame_bigspec.bigspecplot(self.fig_frame_bigspec.axh)
 		
 	#%% Methods
 # 	def mousePressEvent(self, event: QMouseEvent):
@@ -222,12 +270,15 @@ class GUI_Window(QMainWindow):
 #%% Plot class
 class PlotCanvas(FigureCanvas):
 	
-	def __init__(self, frame, currfile_name = None, dpi=100):
+	def __init__(self, frame, dpi=100):
 		super().__init__()
 		#Basic Properties
 		width = frame.width()
 		height = frame.height()
 		fig = Figure(figsize=(width, height), dpi=dpi)
+# 		self.raw2d = gui_window.raw2d
+# 		self.dfspec = gui_window.dfspec
+# 		self.currfile_name = gui_window.currfile_name
 		
 		self.canvas = FigureCanvas(fig)
 		self.setParent(frame)
@@ -260,7 +311,7 @@ class PlotCanvas(FigureCanvas):
 	def bunchspecplot(self,axh):
 		axh.clear()
 		
-		df = self.dfspec
+		df = gui.dfspec
 		
 		if self.radioButton_first4.isChecked():
 			for bunch in range(4):
@@ -277,13 +328,23 @@ class PlotCanvas(FigureCanvas):
 			
 		self.draw()
 		
+	def bigspecplot(self, axh):
+		axh.clear()
+		df = gui.dfspec
+		axh.plot(df.index.values, df.iloc[:,3])
+		axh.set_xlabel('DLD Channel')
+		axh.set_ylabel('Counts')
+		
 class MultiPlotCanvas(FigureCanvas):
-	def __init__(self, frame, currfile_name = None, dpi=100):
+	def __init__(self, frame, dpi=100):
 		super().__init__()
 		# Basic Properties
 		width = frame.width()
 		height = frame.height()
 		fig = Figure(figsize=(width, height), dpi=dpi)
+# 		self.raw2d = gui_window.raw2d
+# 		self.dfspec = gui_window.dfspec
+# 		self.currfile_name = gui_window.currfile_name
 		
 		self.canvas = FigureCanvas(fig)
 		self.setParent(frame)
@@ -316,19 +377,29 @@ class MultiPlotCanvas(FigureCanvas):
 		if action == PlotSeparately:
 			tempfig, tempax = plt.subplots()
 			
-			if self.axbig.contains(event)[0]:
-				self.bigplot(tempax)
-				
-			elif self.axbot.contains(event)[0]:
-				self.botplot(tempax)
-				
-			elif self.axright.contains(event)[0]:
-				self.rightplot(tempax)
+			if gui.tabWidget.currentIndex() == 0:
+				if self.axbig.contains(event)[0]:
+					self.bigplot(tempax)
+				elif self.axbot.contains(event)[0]:
+					self.botplot(tempax)
+				elif self.axright.contains(event)[0]:
+					self.rightplot(tempax)
+					
+			elif gui.tabWidget.currentIndex() == 1:
+				if self.axbig.contains(event)[0]:
+					self.bigplot_slice(tempax)
+				elif self.axbot.contains(event)[0]:
+					self.botplot_slice(tempax)
+				elif self.axright.contains(event)[0]:
+					self.rightplot_slice(tempax)
 			
 		elif action == SavePlot:
-			if self.axbig.contains(event)[0] or self.axbot.contains(event)[0] or self.axright.contains(event)[0]:
-				self.axbig.figure.savefig('2dBunchPattern_' + self.currfile_name)
-				
+			if gui.tabWidget.currentIndex() == 0:
+				if self.axbig.contains(event)[0] or self.axbot.contains(event)[0] or self.axright.contains(event)[0]:
+					self.axbig.figure.savefig('2dBunchPattern_' + gui.currfile_name)
+			elif gui.tabWidget.currentIndex() == 1:
+				if self.axbig.contains(event)[0] or self.axbot.contains(event)[0] or self.axright.contains(event)[0]:
+					self.axbig.figure.savefig('2dSliceView_' + gui.currfile_name)
 # 			elif self.axbot.contains(event)[0]:
 # 				self.axbot.figure.savefig('IntegratedBunchSpectrum_' + self.currfile_name)
 # 				
@@ -338,22 +409,41 @@ class MultiPlotCanvas(FigureCanvas):
 		
 	def bigplot(self, axh):
 		axh.clear()
-		df = self.raw2d.T
+		df = gui.raw2d.T
 		axh.pcolormesh(df.columns, df.index, df.values, shading = 'auto')
 		axh.set_ylabel('Time (ns)')
 		self.draw()
 		
 	def botplot(self, axh):
-# 		ax = self.figure.gca()
 		axh.clear()
-		data = self.raw2d.mean(axis=1)
+		data = gui.raw2d.mean(axis=1)
 		axh.plot(data, 'r-')
 		axh.set_xlabel('DLD Channel')
 		self.draw()
 		
 	def rightplot(self, axh):
 		axh.clear()
-		data = self.raw2d.mean(axis=0)
+		data = gui.raw2d.mean(axis=0)
+		axh.plot(data.values, data.index,'r-')
+		self.draw()
+		
+	def bigplot_slice(self,axh):
+		axh.clear()
+		df = gui.dfspec.T
+		axh.pcolormesh(df.columns, df.index, df.values, shading='auto')
+		axh.set_ylabel('Bunch')
+		self.draw()
+		
+	def botplot_slice(self, axh):
+		axh.clear()
+		data = gui.dfspec.iloc[:,:].mean(axis=1)
+		axh.plot(data, 'r-')
+		axh.set_xlabel('DLD Channel')
+		self.draw()
+	
+	def rightplot_slice(self,axh):
+		axh.clear()
+		data = gui.dfspec.iloc[:,:].mean(axis=0)
 		axh.plot(data.values, data.index,'r-')
 		self.draw()
 		

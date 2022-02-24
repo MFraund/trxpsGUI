@@ -120,7 +120,7 @@
        <string>Pick 2</string>
       </property>
      </widget>
-     <widget class="QFrame" name="frame_multiplot">
+     <widget class="QFrame" name="frame_multi_bunchplot">
       <property name="geometry">
        <rect>
         <x>9</x>
@@ -222,10 +222,26 @@
       </property>
      </widget>
     </widget>
-    <widget class="QWidget" name="tab_3">
+    <widget class="QWidget" name="tab_shifts">
      <attribute name="title">
-      <string>Page</string>
+      <string>Spectral Shifts</string>
      </attribute>
+     <widget class="QFrame" name="frame_specshift">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>1091</width>
+        <height>751</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab_4">
      <attribute name="title">
@@ -590,12 +606,12 @@
       <rect>
        <x>150</x>
        <y>20</y>
-       <width>151</width>
+       <width>111</width>
        <height>16</height>
       </rect>
      </property>
      <property name="text">
-      <string>Current Phase Shifter Value</string>
+      <string>Phase Shifter Value</string>
      </property>
     </widget>
     <widget class="QLineEdit" name="lineEdit_t0val">
@@ -606,6 +622,29 @@
        <width>113</width>
        <height>22</height>
       </rect>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="lineEdit_bunchval">
+     <property name="geometry">
+      <rect>
+       <x>280</x>
+       <y>40</y>
+       <width>113</width>
+       <height>22</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_bunchval">
+     <property name="geometry">
+      <rect>
+       <x>280</x>
+       <y>20</y>
+       <width>91</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Bunch Selected</string>
      </property>
     </widget>
    </widget>

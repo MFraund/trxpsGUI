@@ -18,6 +18,10 @@ from findpeaks import findpeaks
 def loadh5data(h5path):
 	#%% Loading h5 file to dataframe
 	
+	if os.path.isfile(h5path):
+		pass
+	elif os.path.isdir(h5path):
+		pass
 	
 	f = h5py.File(h5path)
 	

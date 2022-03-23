@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 6.0.2, 2022-03-22T20:19:00. -->
+<!-- Written by QtCreator 6.0.0, 2022-02-24T08:56:21. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
-  <value type="QByteArray">{681710d8-12ff-44ee-8669-9abe39db26a1}</value>
+  <value type="QByteArray">{9deaa5d8-1d13-439b-821e-f3e89157aaae}</value>
  </data>
  <data>
   <variable>ProjectExplorer.Project.ActiveTarget</variable>
@@ -91,9 +91,9 @@
   <variable>ProjectExplorer.Project.Target.0</variable>
   <valuemap type="QVariantMap">
    <value type="QString" key="DeviceType">Desktop</value>
-   <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">Desktop (x86-windows-msvc2019-pe-32bit)</value>
-   <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">Desktop (x86-windows-msvc2019-pe-32bit)</value>
-   <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">{04ec178b-e78f-4950-b01c-eddf0112a37f}</value>
+   <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">Desktop Qt 6.2.1 MinGW 64-bit</value>
+   <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">Desktop Qt 6.2.1 MinGW 64-bit</value>
+   <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">qt.qt6.621.win64_mingw81_kit</value>
    <value type="qlonglong" key="ProjectExplorer.Target.ActiveBuildConfiguration">-1</value>
    <value type="qlonglong" key="ProjectExplorer.Target.ActiveDeployConfiguration">0</value>
    <value type="qlonglong" key="ProjectExplorer.Target.ActiveRunConfiguration">0</value>
@@ -118,15 +118,16 @@
     <valuelist type="QVariantList" key="CustomOutputParsers"/>
     <value type="int" key="PE.EnvironmentAspect.Base">2</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">E:/Google Drive/PythonScripts/trxpsGUI/trxpsGUI/GUI_trxps/GUI_trxps_MainWindow.py</value>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">PythonEditor.RunConfiguration.E:/Google Drive/PythonScripts/trxpsGUI/trxpsGUI/GUI_trxps/GUI_trxps_MainWindow.py</value>
-    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">E:/Google Drive/PythonScripts/trxpsGUI/trxpsGUI/GUI_trxps/GUI_trxps_MainWindow.py</value>
-    <value type="QString" key="PythonEditor.RunConfiguation.Script">E:\Google Drive\PythonScripts\trxpsGUI\trxpsGUI\GUI_trxps\GUI_trxps_MainWindow.py</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">D:/Google Drive/PythonScripts/trxpsGUI/trxpsGUI/GUI_trxps/GUI_trxps_MainWindow.py</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">PythonEditor.RunConfiguration.D:/Google Drive/PythonScripts/trxpsGUI/trxpsGUI/GUI_trxps/GUI_trxps_MainWindow.py</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">D:/Google Drive/PythonScripts/trxpsGUI/trxpsGUI/GUI_trxps/GUI_trxps_MainWindow.py</value>
+    <value type="QString" key="PythonEditor.RunConfiguation.Interpreter">{cc614628-25bc-45f7-8045-f15946a60d9f}</value>
+    <value type="QString" key="PythonEditor.RunConfiguation.Script">D:\Google Drive\PythonScripts\trxpsGUI\trxpsGUI\GUI_trxps\GUI_trxps_MainWindow.py</value>
     <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
     <value type="bool" key="RunConfiguration.UseQmlDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
-    <value type="QString" key="RunConfiguration.WorkingDirectory.default">E:/Google Drive/PythonScripts/trxpsGUI/trxpsGUI/GUI_trxps</value>
+    <value type="QString" key="RunConfiguration.WorkingDirectory.default">D:/Google Drive/PythonScripts/trxpsGUI/trxpsGUI/GUI_trxps</value>
    </valuemap>
    <value type="qlonglong" key="ProjectExplorer.Target.RunConfigurationCount">1</value>
   </valuemap>

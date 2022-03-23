@@ -423,6 +423,19 @@
       <set>Qt::AlignCenter</set>
      </property>
     </widget>
+    <widget class="QLineEdit" name="lineEdit_WorkingDir">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>20</y>
+       <width>161</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>D:\Google Drive\Projects\LBL\Beamtimes\ALS 2021 - 9 Nov\Data and Software Dump\Data</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QGroupBox" name="groupBox_normalization">
     <property name="geometry">

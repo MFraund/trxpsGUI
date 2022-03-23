@@ -65,6 +65,7 @@ class GUI_Window(QMainWindow):
 		self.spinBox_month = self.findChild(QSpinBox, 'spinBox_month')
 		self.spinBox_year = self.findChild(QSpinBox, 'spinBox_year')
 		self.spinBox_run = self.findChild(QSpinBox, 'spinBox_run')
+		self.lineEdit_WorkingDir = self.findChild(QLineEdit, 'lineEdit_WorkingDir')
 		
 		#signals
 		self.pushButton_browse.clicked.connect(self.test_click)
@@ -154,7 +155,8 @@ class GUI_Window(QMainWindow):
 		
 	@pyqtSlot()
 	def add_run(self):
-		workingdir = r'D:\Google Drive\Projects\LBL\Beamtimes\ALS 2021 - 9 Nov\Data and Software Dump\Data'
+# 		workingdir = r'D:\Google Drive\Projects\LBL\Beamtimes\ALS 2021 - 9 Nov\Data and Software Dump\Data'
+		workingdir = self.lineEdit_WorkingDir.text()
 		year = self.spinBox_year.value()
 		month = self.spinBox_month.value()
 		day = self.spinBox_day.value()

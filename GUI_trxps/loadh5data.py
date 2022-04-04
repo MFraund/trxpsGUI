@@ -14,30 +14,25 @@ from tqdm import tqdm
 from scipy import signal
 import os
 from findpeaks import findpeaks
+import glob
 
-def loadh5data(h5path):
+
+def loadh5data_file(h5path):
 	#%% Loading h5 file to dataframe
-	
-	if os.path.isfile(h5path):
-		pass
-	elif os.path.isdir(h5path):
-		pass
+
 	
 	f = h5py.File(h5path)
 	
 	df_rawvec = pd.DataFrame()
-	# dtype_list = 
 	
 	for colname in f.keys():
-# 	    print(colname)
-	    tempdf = pd.DataFrame(np.array(f[colname[:]]).T,
-	                          # dtype = dtype_list[colname],
-	                          columns=[colname[:]])
-	    df_rawvec = pd.concat([df_rawvec, tempdf], axis=1, copy=False)
+		tempdf = pd.DataFrame(np.array(f[colname[:]]).T,
+								# dtype = dtype_list[colname],
+								columns=[colname[:]])
+		df_rawvec = pd.concat([df_rawvec, tempdf], axis=1, copy=False)
 		
 	del(tempdf)
 	
-# 	print(df_rawvec)
 	############ Time Res Empirically
 	bunchwidth = 1.9988e5-1.5212e5
 	TDC_res_empirical = 328e3/bunchwidth
@@ -54,7 +49,6 @@ def loadh5data(h5path):
 	num_bins = num_TDC_steps / bin_width #
 	
 	bin_tres_ps = bin_width * TDC_res_empirical # ps/bin???
-	
 	
 	
 	#dropping bad rows
@@ -83,7 +77,7 @@ def loadh5data(h5path):
 	
 	# wut = signal.find_peaks(bunchpattern, distance = 250/(bin_tres_ps/1000) )
 	# peak_tup = signal.find_peaks(bunchpattern, prominence = 2)
-	fp = findpeaks(lookahead = 1, interpolate = 5, method='topology')
+	fp = findpeaks(lookahead = 1, interpolate = 5, method='topology', verbose=0)
 	results = fp.fit(bunchpattern)
 	peak_idxs = results['df'].score.nlargest(24).sort_index()
 	# peak_idxs = peak_tup[0]
@@ -91,10 +85,33 @@ def loadh5data(h5path):
 	dfspec = pd.DataFrame()
 	
 	for peak in range(len(peak_idxs.index)):
-	    curr_peakidx = peak_idxs.index[peak]
-	    dfspec[peak] = raw2d.iloc[:, curr_peakidx-1:curr_peakidx+1].sum(axis=1)
+		curr_peakidx = peak_idxs.index[peak]
+		dfspec[peak] = raw2d.iloc[:, curr_peakidx-1:curr_peakidx+1].sum(axis=1)
 		
-	avg_spec = dfspec.mean(axis=1)
-	int_spec = dfspec.sum(axis=1)
 	
 	return raw2d, dfspec
+
+
+def loadh5data_folder(folderpath):
+	filelist = glob.glob(os.path.join(folderpath,'*.h5'))
+	numfiles = len(filelist)
+
+	dfspeclist = list()
+	raw2dspeclist = list()
+	dfpumped= pd.DataFrame()
+
+	psarray = np.empty(numfiles)
+	for file in tqdm(range(numfiles)):
+		
+		filename_noext = os.path.split(filelist[file])[1][:-3]
+		psidx = filename_noext.find('ps')
+		psval = int(filename_noext[psidx+2:])
+		psarray[file] = psval
+		
+		
+		raw2dspec, dfspec = loadh5data_file(filelist[file])
+		dfspeclist.append(dfspec)
+		raw2dspeclist.append(raw2dspec)
+		dfpumped.append(dfspec.iloc[:,2])
+		
+	return raw2dspeclist, dfspeclist, psarray

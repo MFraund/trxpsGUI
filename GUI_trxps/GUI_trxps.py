@@ -14,7 +14,7 @@ from PyQt5 import uic
 
 from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QSizePolicy
-from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtWidgets import QFileDialog, QDialog
 from PyQt5.QtWidgets import QPushButton, QListWidget, QSpinBox, QTextEdit
 from PyQt5.QtWidgets import QLabel, QRadioButton, QGroupBox, QLineEdit
 from PyQt5.QtWidgets import QTabWidget, QFrame, QMenu
@@ -34,7 +34,7 @@ import pandas as pd
 
 import random
 
-from loadh5data import loadh5data
+from loadh5data import loadh5data_file, loadh5data_folder
 
 
 class GUI_Window(QMainWindow):
@@ -68,7 +68,7 @@ class GUI_Window(QMainWindow):
 		self.lineEdit_WorkingDir = self.findChild(QLineEdit, 'lineEdit_WorkingDir')
 		
 		#signals
-		self.pushButton_browse.clicked.connect(self.test_click)
+		self.pushButton_browse.clicked.connect(self.set_workingdir)
 		self.pushButton_add.clicked.connect(self.add_run)
 # 		self.pushButton_browse.clicked.connect(self.browse_runs)
 		
@@ -148,8 +148,16 @@ class GUI_Window(QMainWindow):
 		
 		
 	@pyqtSlot()
-	def test_click(self):
-		self.statusBar().showMessage('test button click')
+	def set_workingdir(self):
+		dialog = QFileDialog()
+		dialog.setFileMode(QFileDialog.DirectoryOnly)
+		dialog.setAcceptMode(QFileDialog.AcceptOpen)
+		if dialog.exec_() == QDialog.Accepted:
+			path = dialog.selectedFiles()[0]
+			self.path = path
+			self.lineEdit_WorkingDir.setText(path)
+# 		dirname = QFileDialog.getOpenFileName(self, tr("Open Image"), '\D:\Google Drive\Projects\LBL\Beamtimes\ALS')
+# 		self.statusBar().showMessage('test button click')
 # 		data = [random.random() for i in range(25)]
 # 		self.fig_frame_intspec.plot(data = data)
 		
@@ -164,26 +172,35 @@ class GUI_Window(QMainWindow):
 		
 		scanfolder = 'PS_Scan_' + str(year) + str(month) + str(day) + '-run' + f'{run:03d}'
 		h5file = str(year) + str(month) + str(day) + '-run' + f'{run:03d}' + '.h5'
-		
 		scanpath = os.path.join(workingdir, scanfolder)
 		h5path = os.path.join(workingdir, h5file)
 		
 		
-		if self.listWidget_runs.findItems(h5file,Qt.MatchExactly):
+		if self.listWidget_runs.findItems(h5file,Qt.MatchExactly) or self.listWidget_runs.findItems(scanpath, Qt.MatchExactly):
 			self.statusBar().showMessage('Duplicate File')
 		else:
 			try:
-				self.raw2d, self.dfspec = loadh5data(h5path)
-				self.listWidget_runs.addItem(h5file)
-				added_item = self.listWidget_runs.findItems(h5file,Qt.MatchExactly)
-				itemrow = self.listWidget_runs.indexFromItem(added_item[0]).row()
-				self.pathlist.append(h5path)
-				
+				if os.path.isfile(h5path):
+						self.raw2d, self.dfspec = loadh5data_file(h5path)
+						self.listWidget_runs.addItem(h5file)
+						added_item = self.listWidget_runs.findItems(h5file,Qt.MatchExactly)
+						itemrow = self.listWidget_runs.indexFromItem(added_item[0]).row()
+						self.pathlist.append(h5path)
+						
+				elif os.path.isdir(scanpath):
+						self.raw2dlist, self.dfspeclist, self.psarray = loadh5data_folder(scanpath)
+						self.listWidget_runs.addItem(scanfolder)
+						added_item = self.listWidget_runs.findItems(scanfolder,Qt.MatchExactly)
+						itemrow = self.listWidget_runs.indexFromItem(added_item[0]).row()
+						self.pathlist.append(scanpath)
+						
 				if itemrow == 0:
 					self.list_select(itemrow)
-				
+					
 			except:
 				self.statusBar().showMessage('Error Loading')
+			
+			
 			
 		
 	@pyqtSlot()
@@ -192,16 +209,19 @@ class GUI_Window(QMainWindow):
 		
 	@pyqtSlot()
 	def list_select(self, currrow = None):
-		
 		if currrow == None:
 			currrow = self.listWidget_runs.currentRow()
 		self.currpath = self.pathlist[currrow]
 		self.currfile = os.path.split(self.currpath)[1]
 		self.currfile_name = os.path.splitext(self.currfile)[0]
 		
-		self.raw2d, self.dfspec = loadh5data(self.currpath)
-		
-		
+		if os.path.isfile(self.currpath):
+			self.raw2d, self.dfspec = loadh5data_file(self.currpath)
+			
+		elif os.path.isdir(self.currpath):
+			self.raw2dlist, self.dfspeclist, self.psarray = loadh5data_folder(self.currpath)
+			self.raw2d = self.raw2dlist[2]
+			self.dfspec = self.dfspeclist[2]
 		self.update_tab_bunches()
 		
 	@pyqtSlot()

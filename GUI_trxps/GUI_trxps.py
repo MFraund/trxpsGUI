@@ -97,9 +97,13 @@ class GUI_Window(QMainWindow):
 		self.label_PSval = self.findChild(QLabel,'label_PSval')
 		self.label_t0val = self.findChild(QLabel,'label_t0val')
 		
-		self.lineEdit_PSval = self.findChild(QLineEdit,'lineEdit_PSval')
-		self.lineEdit_t0val = self.findChild(QLineEdit,'lineEdit_t0val')
-		self.lineEdit_bunchval = self.findChild(QLineEdit, 'lineEdit_bunchval')
+		self.spinBox_PSval = self.findChild(QLabel,'spinBox_PSval')
+		self.spinBox_t0val = self.findChild(QLabel,'spinBox_t0val')
+		self.spinBox_bunchval = self.findChild(QLabel,'spinBox_bunchval')
+		
+# 		self.lineEdit_PSval = self.findChild(QLineEdit,'lineEdit_PSval')
+# 		self.lineEdit_t0val = self.findChild(QLineEdit,'lineEdit_t0val')
+# 		self.lineEdit_bunchval = self.findChild(QLineEdit, 'lineEdit_bunchval')
 		
 		#%% Bunch Viewer Tab
 		self.tabWidget = self.findChild(QTabWidget, 'tabWidget_main')

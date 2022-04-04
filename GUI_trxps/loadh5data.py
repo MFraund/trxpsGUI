@@ -98,7 +98,7 @@ def loadh5data_folder(folderpath):
 
 	dfspeclist = list()
 	raw2dspeclist = list()
-	dfpumped= pd.DataFrame()
+
 
 	psarray = np.empty(numfiles)
 	for file in tqdm(range(numfiles)):
@@ -112,6 +112,6 @@ def loadh5data_folder(folderpath):
 		raw2dspec, dfspec = loadh5data_file(filelist[file])
 		dfspeclist.append(dfspec)
 		raw2dspeclist.append(raw2dspec)
-		dfpumped.append(dfspec.iloc[:,2])
+
 		
 	return raw2dspeclist, dfspeclist, psarray

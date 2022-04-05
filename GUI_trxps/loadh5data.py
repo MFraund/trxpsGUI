@@ -60,12 +60,16 @@ def loadh5data_file(h5path):
 	xOvert = df_rawvec.t.groupby([df_rawvec.x, df_rawvec.t//bin_width]).count()
 	#use pandas cut then groupby
 	raw2d = xOvert.unstack()
+	
 	raw2d = raw2d.fillna(0)
-	raw2d = raw2d.reindex(list(range(int(raw2d.index.min()), int(raw2d.index.max())+1)), fill_value=0)
+	
+# 	raw2d = raw2d.reindex(list(range(int(raw2d.index.min()), int(raw2d.index.max())+1)), fill_value=0)
+	raw2d = raw2d.reindex(list(range(0, 127+1)), fill_value=0)
+# 	raw2d = raw2d.reindex(list(range(0, 128)), fill_value=0)
 	
 	counts2d = raw2d.values
 	
-	
+	  
 	raw2d.columns = raw2d.columns * bin_tres_ps/1000
 	x_det_ch = raw2d.index.values
 	t_ps = raw2d.columns.values*1000

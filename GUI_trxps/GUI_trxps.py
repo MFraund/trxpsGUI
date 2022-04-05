@@ -31,6 +31,7 @@ import addcopyfighandler
 
 import seaborn as sns
 import pandas as pd
+import numpy as np
 
 import random
 
@@ -180,7 +181,7 @@ class GUI_Window(QMainWindow):
 		h5path = os.path.join(workingdir, h5file)
 		
 		
-		if self.listWidget_runs.findItems(h5file,Qt.MatchExactly) or self.listWidget_runs.findItems(scanpath, Qt.MatchExactly):
+		if self.listWidget_runs.findItems(h5file,Qt.MatchExactly) or self.listWidget_runs.findItems(scanfolder, Qt.MatchExactly):
 			self.statusBar().showMessage('Duplicate File')
 		else:
 			try:

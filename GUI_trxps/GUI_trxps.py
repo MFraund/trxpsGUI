@@ -20,7 +20,7 @@ from PyQt5.QtWidgets import QLabel, QRadioButton, QGroupBox, QLineEdit
 from PyQt5.QtWidgets import QTabWidget, QFrame, QMenu
 # from PyQt5.QtWidgets import QFrame
 from PyQt5.QtGui import QIcon, QMouseEvent
-from PyQt5.QtCore import pyqtSlot, QTimer, Qt, QEvent, QPoint
+from PyQt5.QtCore import pyqtSlot, QTimer, Qt, QEvent, QPoint, QSettings
 
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -44,6 +44,7 @@ class GUI_Window(QMainWindow):
 		uic.loadUi('form.ui',self)
 		self.widget = self.findChild(QWidget, 'centralwidget')
 		self.pathlist = []
+		self.settings = QSettings('GUI_Window','GUI_Settings')
 		self.initUI()
 		
 	def initUI(self):
@@ -67,6 +68,7 @@ class GUI_Window(QMainWindow):
 		self.spinBox_year = self.findChild(QSpinBox, 'spinBox_year')
 		self.spinBox_run = self.findChild(QSpinBox, 'spinBox_run')
 		self.lineEdit_WorkingDir = self.findChild(QLineEdit, 'lineEdit_WorkingDir')
+		self.lineEdit_WorkingDir.setText(self.settings.value('WorkingDir_text',type = str))
 		
 		#signals
 		self.pushButton_browse.clicked.connect(self.set_workingdir)
@@ -267,6 +269,11 @@ class GUI_Window(QMainWindow):
 		self.fig_frame_multislice.rightplot_slice(self.fig_frame_multislice.axright)
 		self.fig_frame_bigspec.bigspecplot(self.fig_frame_bigspec.axh)
 		
+	#%% Non Slot Functions
+	
+	def closeEvent(self, event):
+		self.settings.setValue('WorkingDir_text', self.lineEdit_WorkingDir.text())
+		print('settings saved')
 	#%% Methods
 # 	def mousePressEvent(self, event: QMouseEvent):
 # 		if event.button() == Qt.RightButton:

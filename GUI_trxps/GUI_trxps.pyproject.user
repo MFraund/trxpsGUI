@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 6.0.2, 2022-04-04T13:08:49. -->
+<!-- Written by QtCreator 6.0.2, 2022-04-05T14:42:02. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -122,10 +122,12 @@
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">PythonEditor.RunConfiguration.E:/Google Drive/PythonScripts/trxpsGUI/trxpsGUI/GUI_trxps/GUI_trxps_MainWindow.py</value>
     <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">E:/Google Drive/PythonScripts/trxpsGUI/trxpsGUI/GUI_trxps/GUI_trxps_MainWindow.py</value>
     <value type="QString" key="PythonEditor.RunConfiguation.Interpreter">{c6bed646-4ec2-4121-bdba-1abbaa4c55a9}</value>
+    <value type="QString" key="PythonEditor.RunConfiguation.Script">E:\Google Drive\PythonScripts\trxpsGUI\trxpsGUI\GUI_trxps\GUI_trxps_MainWindow.py</value>
     <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
     <value type="bool" key="RunConfiguration.UseQmlDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
+    <value type="QString" key="RunConfiguration.WorkingDirectory.default">E:/Google Drive/PythonScripts/trxpsGUI/trxpsGUI/GUI_trxps</value>
    </valuemap>
    <value type="qlonglong" key="ProjectExplorer.Target.RunConfigurationCount">1</value>
   </valuemap>

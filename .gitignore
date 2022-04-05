@@ -1,3 +1,4 @@
 *.ini
 *.pyproject
 *.pyc
+*.user

@@ -374,8 +374,9 @@ class PlotCanvas(FigureCanvas):
 		
 	def specshiftplot(self, axh):
 		axh.clear()
-		df = gui.dfspec
-# 		axh.scatter()
+		psarray = gui.psarray
+		corr = gui.vargout[1]
+		axh.scatter(psarray, corr)
 		
 class MultiPlotCanvas(FigureCanvas):
 	def __init__(self, frame, dpi=100):

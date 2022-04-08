@@ -15,11 +15,21 @@ from scipy import signal
 import os
 from findpeaks import findpeaks
 import glob
+import pickle
 
-
-def loadh5data_file(h5path):
+def loadh5data_file(h5path, loadsaved = True):
 	#%% Loading h5 file to dataframe
-
+	
+	barepath, h5ext = os.path.splitext(h5path)
+	picklepath = barepath + '_pickle'
+	
+	if os.path.exists(picklepath) and loadsaved == True:
+		
+		with open(picklepath, mode='rb') as f:
+			vardict = pickle.load(f)
+			return vardict['raw2d'], vardict['dfspec']
+# 			vardict = json.loads(''.join(f.readlines()))
+# 			return vardict['raw2d'], vardict['dfspec']
 	
 	f = h5py.File(h5path)
 	
@@ -93,6 +103,12 @@ def loadh5data_file(h5path):
 		dfspec[peak] = raw2d.iloc[:, curr_peakidx-1:curr_peakidx+1].sum(axis=1)
 		
 	
+	vardict = {'raw2d':raw2d, 'dfspec':dfspec}
+	
+	with open(picklepath, mode='wb') as f:
+		pickle.dump(vardict, f)
+# 		f.write(json.dumps(vardict))
+		
 	return raw2d, dfspec
 
 
@@ -103,7 +119,8 @@ def loadh5data_folder(folderpath):
 	dfspeclist = list()
 	raw2dspeclist = list()
 
-
+	pumpedarray = np.empty([128,numfiles])
+	
 	psarray = np.empty(numfiles)
 	for file in tqdm(range(numfiles)):
 		
@@ -116,6 +133,22 @@ def loadh5data_folder(folderpath):
 		raw2dspec, dfspec = loadh5data_file(filelist[file])
 		dfspeclist.append(dfspec)
 		raw2dspeclist.append(raw2dspec)
+		
+		pumpedarray[:,file] = dfspec.iloc[:,2].to_numpy()
+		
+		
+	refspec = 0
+	probespec = 2
+	interpfac = 200
+	
+	corr = np.empty(pumpedarray.shape[1])
+	for spec in range(pumpedarray.shape[1]):
+		resampled_ref = signal.resample(pumpedarray[:,-1], pumpedarray.shape[0]*interpfac, psarray)
+		resampled_probe = signal.resample(pumpedarray[:,spec], pumpedarray.shape[0]*interpfac, psarray)
+		test = signal.correlate(resampled_ref[0], resampled_probe[0], mode='same')
+		maxshift = np.array((len(test)//2 - np.argmin(np.abs(test - test.max())))/interpfac)
+		corr[spec] = maxshift
+		# np.concatenate([corr, maxshift])
 
 		
-	return raw2dspeclist, dfspeclist, psarray
+	return raw2dspeclist, dfspeclist, psarray, (pumpedarray, corr)

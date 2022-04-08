@@ -34,6 +34,7 @@ import pandas as pd
 import numpy as np
 
 import random
+import json
 
 from loadh5data import loadh5data_file, loadh5data_folder
 
@@ -195,7 +196,7 @@ class GUI_Window(QMainWindow):
 						self.pathlist.append(h5path)
 						
 				elif os.path.isdir(scanpath):
-						self.raw2dlist, self.dfspeclist, self.psarray = loadh5data_folder(scanpath)
+						self.raw2dlist, self.dfspeclist, self.psarray, self.extra = loadh5data_folder(scanpath)
 						self.listWidget_runs.addItem(scanfolder)
 						added_item = self.listWidget_runs.findItems(scanfolder,Qt.MatchExactly)
 						itemrow = self.listWidget_runs.indexFromItem(added_item[0]).row()
@@ -226,7 +227,7 @@ class GUI_Window(QMainWindow):
 			self.raw2d, self.dfspec = loadh5data_file(self.currpath)
 			
 		elif os.path.isdir(self.currpath):
-			self.raw2dlist, self.dfspeclist, self.psarray = loadh5data_folder(self.currpath)
+			self.raw2dlist, self.dfspeclist, self.psarray, self.vargout = loadh5data_folder(self.currpath)
 			self.raw2d = self.raw2dlist[2]
 			self.dfspec = self.dfspeclist[2]
 		self.update_tab_bunches()
@@ -268,6 +269,8 @@ class GUI_Window(QMainWindow):
 		self.fig_frame_multislice.botplot_slice(self.fig_frame_multislice.axbot)
 		self.fig_frame_multislice.rightplot_slice(self.fig_frame_multislice.axright)
 		self.fig_frame_bigspec.bigspecplot(self.fig_frame_bigspec.axh)
+		
+		self.fig_frame_specshift.specshiftplot(self.fig_frame_specshift.axh)
 		
 	#%% Non Slot Functions
 	
@@ -368,6 +371,11 @@ class PlotCanvas(FigureCanvas):
 		axh.plot(df.index.values, df.iloc[:,3])
 		axh.set_xlabel('DLD Channel')
 		axh.set_ylabel('Counts')
+		
+	def specshiftplot(self, axh):
+		axh.clear()
+		df = gui.dfspec
+# 		axh.scatter()
 		
 class MultiPlotCanvas(FigureCanvas):
 	def __init__(self, frame, dpi=100):

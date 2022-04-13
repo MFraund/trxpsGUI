@@ -105,6 +105,9 @@ class GUI_Window(QMainWindow):
 		self.spinBox_t0val = self.findChild(QLabel,'spinBox_t0val')
 		self.spinBox_bunchval = self.findChild(QLabel,'spinBox_bunchval')
 		
+# 		print(self.spinBox_PSval)
+# 		self.spinBox_PSval.textChanged.connect(self.change_PS_val)
+		
 # 		self.lineEdit_PSval = self.findChild(QLineEdit,'lineEdit_PSval')
 # 		self.lineEdit_t0val = self.findChild(QLineEdit,'lineEdit_t0val')
 # 		self.lineEdit_bunchval = self.findChild(QLineEdit, 'lineEdit_bunchval')
@@ -214,6 +217,14 @@ class GUI_Window(QMainWindow):
 	@pyqtSlot()
 	def browse_runs(self):
 		self.statusBar.showMessage('browsing runs')
+		
+	@pyqtSlot()
+	def change_PS_val(self):
+		
+		self.PSval= np.abs(self.spinBox_PSval.value() - self.psarray).argmin()
+		print(self.PSval)
+# 		self.raw2d = self.raw2dlist[self.PSval]
+# 		self.dfspec = self.dfspeclist[self.PSval]
 		
 	@pyqtSlot()
 	def list_select(self, currrow = None):

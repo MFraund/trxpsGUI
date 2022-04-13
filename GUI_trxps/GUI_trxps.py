@@ -71,6 +71,8 @@ class GUI_Window(QMainWindow):
 		self.lineEdit_WorkingDir = self.findChild(QLineEdit, 'lineEdit_WorkingDir')
 		self.lineEdit_WorkingDir.setText(self.settings.value('WorkingDir_text',type = str))
 		
+		
+		
 		#signals
 		self.pushButton_browse.clicked.connect(self.set_workingdir)
 		self.pushButton_add.clicked.connect(self.add_run)
@@ -101,12 +103,11 @@ class GUI_Window(QMainWindow):
 		self.label_PSval = self.findChild(QLabel,'label_PSval')
 		self.label_t0val = self.findChild(QLabel,'label_t0val')
 		
-		self.spinBox_PSval = self.findChild(QLabel,'spinBox_PSval')
-		self.spinBox_t0val = self.findChild(QLabel,'spinBox_t0val')
-		self.spinBox_bunchval = self.findChild(QLabel,'spinBox_bunchval')
+		self.spinBox_PSval = self.findChild(QSpinBox,'spinBox_PSval')
+		self.spinBox_t0val = self.findChild(QSpinBox,'spinBox_t0val')
+		self.spinBox_bunchval = self.findChild(QSpinBox,'spinBox_bunchval')
 		
-# 		print(self.spinBox_PSval)
-# 		self.spinBox_PSval.textChanged.connect(self.change_PS_val)
+		self.spinBox_PSval.valueChanged.connect(self.change_PSval)
 		
 # 		self.lineEdit_PSval = self.findChild(QLineEdit,'lineEdit_PSval')
 # 		self.lineEdit_t0val = self.findChild(QLineEdit,'lineEdit_t0val')
@@ -219,10 +220,12 @@ class GUI_Window(QMainWindow):
 		self.statusBar.showMessage('browsing runs')
 		
 	@pyqtSlot()
-	def change_PS_val(self):
+	def change_PSval(self):
 		
 		self.PSval= np.abs(self.spinBox_PSval.value() - self.psarray).argmin()
-		print(self.PSval)
+		print(self.psarray[self.PSval])
+		self.spinBox_PSval.setValue(int(self.psarray[self.PSval]))
+		self.update_tab_bunches()
 # 		self.raw2d = self.raw2dlist[self.PSval]
 # 		self.dfspec = self.dfspeclist[self.PSval]
 		
@@ -243,6 +246,7 @@ class GUI_Window(QMainWindow):
 			self.raw2dlist, self.dfspeclist, self.psarray, self.vargout = loadh5data_folder(self.currpath)
 			self.raw2d = self.raw2dlist[2]
 			self.dfspec = self.dfspeclist[2]
+		self.change_PSval()
 		self.update_tab_bunches()
 		
 	@pyqtSlot()
@@ -282,7 +286,7 @@ class GUI_Window(QMainWindow):
 		self.fig_frame_multislice.botplot_slice(self.fig_frame_multislice.axbot)
 		self.fig_frame_multislice.rightplot_slice(self.fig_frame_multislice.axright)
 		self.fig_frame_bigspec.bigspecplot(self.fig_frame_bigspec.axh)
-		print(0)
+		
 		self.fig_frame_specshift.specshiftplot(self.fig_frame_specshift.axh)
 		
 	#%% Non Slot Functions

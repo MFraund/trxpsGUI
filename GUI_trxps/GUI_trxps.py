@@ -236,6 +236,8 @@ class GUI_Window(QMainWindow):
 		
 		if os.path.isfile(self.currpath):
 			self.raw2d, self.dfspec = loadh5data_file(self.currpath)
+			self.psarray = np.array(0)
+			self.vargout = (np.array(0), np.array(0))
 			
 		elif os.path.isdir(self.currpath):
 			self.raw2dlist, self.dfspeclist, self.psarray, self.vargout = loadh5data_folder(self.currpath)
@@ -280,7 +282,7 @@ class GUI_Window(QMainWindow):
 		self.fig_frame_multislice.botplot_slice(self.fig_frame_multislice.axbot)
 		self.fig_frame_multislice.rightplot_slice(self.fig_frame_multislice.axright)
 		self.fig_frame_bigspec.bigspecplot(self.fig_frame_bigspec.axh)
-		
+		print(0)
 		self.fig_frame_specshift.specshiftplot(self.fig_frame_specshift.axh)
 		
 	#%% Non Slot Functions
@@ -382,12 +384,14 @@ class PlotCanvas(FigureCanvas):
 		axh.plot(df.index.values, df.iloc[:,3])
 		axh.set_xlabel('DLD Channel')
 		axh.set_ylabel('Counts')
+		self.draw()
 		
 	def specshiftplot(self, axh):
 		axh.clear()
 		psarray = gui.psarray
 		corr = gui.vargout[1]
 		axh.scatter(psarray, corr)
+		self.draw()
 		
 class MultiPlotCanvas(FigureCanvas):
 	def __init__(self, frame, dpi=100):

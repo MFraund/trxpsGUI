@@ -2,3 +2,5 @@
 *.pyproject
 *.pyc
 *.user
+*.ini
+*.user

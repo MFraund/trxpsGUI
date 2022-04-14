@@ -223,6 +223,7 @@ class GUI_Window(QMainWindow):
 	def change_PSval(self):
 		
 		self.PSval= np.abs(self.spinBox_PSval.value() - self.psarray).argmin()
+		print(self.PSval)
 		print(self.psarray[self.PSval])
 		self.spinBox_PSval.setValue(int(self.psarray[self.PSval]))
 		self.update_tab_bunches()
@@ -239,8 +240,8 @@ class GUI_Window(QMainWindow):
 		
 		if os.path.isfile(self.currpath):
 			self.raw2d, self.dfspec = loadh5data_file(self.currpath)
-			self.psarray = np.array(0)
-			self.vargout = (np.array(0), np.array(0))
+			self.psarray = np.array([0])
+			self.vargout = (np.array([0]), np.array([0]))
 			
 		elif os.path.isdir(self.currpath):
 			self.raw2dlist, self.dfspeclist, self.psarray, self.vargout = loadh5data_folder(self.currpath)

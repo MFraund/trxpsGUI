@@ -17,7 +17,7 @@ from findpeaks import findpeaks
 import glob
 import pickle
 
-def loadh5data_file(h5path, loadsaved = True):
+def loadh5data_file(h5path, loadsaved = True, tdcsetting = 'Free', alsbunchtype = 'multi'):
 	#%% Loading h5 file to dataframe
 	
 	barepath, h5ext = os.path.splitext(h5path)
@@ -64,7 +64,11 @@ def loadh5data_file(h5path, loadsaved = True):
 	#dropping bad rows
 	# df_rawvec.dropna(inplace=True, thresh = 3)
 	df_rawvec = df_rawvec[df_rawvec.x <=150] # some detector values are 6e5 for some reason
-	df_rawvec = df_rawvec[df_rawvec.t < num_TDC_steps*1.2] # 7.87 us / 27.4 ps = maximum number of steps between laser 
+	
+	if tdcsetting == 'Ext Start':
+		df_rawvec = df_rawvec[df_rawvec.t < num_TDC_steps*1.2] # 7.87 us / 27.4 ps = maximum number of steps between laser 
+	elif tdcsetting == 'Free':
+		pass
 	
 	
 	xOvert = df_rawvec.t.groupby([df_rawvec.x, df_rawvec.t//bin_width]).count()
@@ -93,7 +97,11 @@ def loadh5data_file(h5path, loadsaved = True):
 	# peak_tup = signal.find_peaks(bunchpattern, prominence = 2)
 	fp = findpeaks(lookahead = 1, interpolate = 5, method='topology', verbose=0)
 	results = fp.fit(bunchpattern)
-	peak_idxs = results['df'].score.nlargest(24).sort_index()
+	
+	if alsbunchtype == 'multi':
+		peak_idxs = results['df'].score.nlargest(24).sort_index()
+	elif alsbunchtype  == 'free':
+		peak_idxs = results['df'].score.nlargest(12).sort_index()
 	# peak_idxs = peak_tup[0]
 	
 	dfspec = pd.DataFrame()
@@ -112,7 +120,7 @@ def loadh5data_file(h5path, loadsaved = True):
 	return raw2d, dfspec
 
 
-def loadh5data_folder(folderpath):
+def loadh5data_folder(folderpath, tdcsetting = 'Free'):
 	filelist = glob.glob(os.path.join(folderpath,'*.h5'))
 	numfiles = len(filelist)
 

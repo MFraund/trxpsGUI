@@ -208,7 +208,7 @@ class GUI_Window(QMainWindow):
 						
 				if itemrow == 0:
 					self.list_select(itemrow)
-# 					self.listWidget_runs.setCurrentRow(itemrow)
+					self.listWidget_runs.setCurrentRow(itemrow)
 					
 			except:
 				self.statusBar().showMessage('Error Loading')
@@ -225,6 +225,10 @@ class GUI_Window(QMainWindow):
 		
 		self.PSval= np.abs(self.spinBox_PSval.value() - self.psarray).argmin()
 		self.spinBox_PSval.setValue(int(self.psarray[self.PSval]))
+		if os.path.isdir(self.currpath):
+			self.raw2d = self.raw2dlist[self.PSval]
+			self.dfspec = self.dfspeclist[self.PSval]
+			
 		self.update_tab_bunches()
 # 		self.raw2d = self.raw2dlist[self.PSval]
 # 		self.dfspec = self.dfspeclist[self.PSval]
@@ -244,6 +248,7 @@ class GUI_Window(QMainWindow):
 			
 		elif os.path.isdir(self.currpath):
 			self.raw2dlist, self.dfspeclist, self.psarray, self.vargout = loadh5data_folder(self.currpath)
+			# self.PSval
 			self.raw2d = self.raw2dlist[2]
 			self.dfspec = self.dfspeclist[2]
 		self.change_PSval()
@@ -251,7 +256,7 @@ class GUI_Window(QMainWindow):
 		
 	@pyqtSlot()
 	def update_tab_bunches(self):
-		
+		print(self.PSval)
 # 		self.init_figcanvas()
 		
 		#Giving each frame instance access to data
@@ -288,6 +293,7 @@ class GUI_Window(QMainWindow):
 		self.fig_frame_bigspec.bigspecplot(self.fig_frame_bigspec.axh)
 		
 		self.fig_frame_specshift.specshiftplot(self.fig_frame_specshift.axh)
+		
 		
 	#%% Non Slot Functions
 	
@@ -509,6 +515,25 @@ class MultiPlotCanvas(FigureCanvas):
 		axh.plot(data.values, data.index,'r-')
 		self.draw()
 		
+	def bigplot_PSslice(self,axh):
+		axh.clear()
+		df = gui.dfspec.T
+		axh.pcolormesh(df.columns, df.index, df.values, shading='auto')
+		axh.set_ylabel('Bunch')
+		self.draw()
+		
+	def botplot_PSslice(self, axh):
+		axh.clear()
+		data = gui.dfspec.iloc[:,:].mean(axis=1)
+		axh.plot(data, 'r-')
+		axh.set_xlabel('DLD Channel')
+		self.draw()
+	
+	def rightplot_PSslice(self,axh):
+		axh.clear()
+		data = gui.dfspec.iloc[:,:].mean(axis=0)
+		axh.plot(data.values, data.index,'r-')
+		self.draw()
 		
 #%% Run thing idk
 if __name__ == '__main__':

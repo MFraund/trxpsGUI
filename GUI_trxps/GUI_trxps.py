@@ -71,8 +71,8 @@ class GUI_Window(QMainWindow):
 		self.lineEdit_WorkingDir = self.findChild(QLineEdit, 'lineEdit_WorkingDir')
 		self.lineEdit_WorkingDir.setText(self.settings.value('WorkingDir_text',type = str))
 		
-# 		self.checkBox_extstart = self.findChild(QCheckBox, 'checkBox_tdctype')
-# 		self.checkBox_alsbunchtype = self.findChild(QCheckBox, 'checkBox_alsbunchtype')
+		self.checkBox_extstart = self.findChild(QCheckBox, 'checkBox_tdctype')
+		self.checkBox_alsbunchtype = self.findChild(QCheckBox, 'checkBox_alsbunchtype')
 		
 		
 		
@@ -195,15 +195,25 @@ class GUI_Window(QMainWindow):
 			self.statusBar().showMessage('Duplicate File')
 		else:
 			try:
+				if self.checkBox_extstart.isChecked():
+					tdcset = 'Ext Start'
+				else:
+					tdcset = 'Free'
+					
+				if self.checkBox_alsbunchtype.isChecked():
+					alsset = 'multi'
+				else:
+					alsset = '2B'
+				
 				if os.path.isfile(h5path):
-						self.raw2d, self.dfspec = loadh5data_file(h5path)
+						self.raw2d, self.dfspec = loadh5data_file(h5path, tdcsetting=tdcset ,alsbunchtype=alsset)
 						self.listWidget_runs.addItem(h5file)
 						added_item = self.listWidget_runs.findItems(h5file,Qt.MatchExactly)
 						itemrow = self.listWidget_runs.indexFromItem(added_item[0]).row()
 						self.pathlist.append(h5path)
 						
 				elif os.path.isdir(scanpath):
-						self.raw2dlist, self.dfspeclist, self.psarray, self.extra = loadh5data_folder(scanpath)
+						self.raw2dlist, self.dfspeclist, self.psarray, self.extra = loadh5data_folder(scanpath, tdcsetting=tdcset ,alsbunchtype=alsset)
 						self.listWidget_runs.addItem(scanfolder)
 						added_item = self.listWidget_runs.findItems(scanfolder,Qt.MatchExactly)
 						itemrow = self.listWidget_runs.indexFromItem(added_item[0]).row()
@@ -244,13 +254,23 @@ class GUI_Window(QMainWindow):
 		self.currfile = os.path.split(self.currpath)[1]
 		self.currfile_name = os.path.splitext(self.currfile)[0]
 		
+		if self.checkBox_extstart.isChecked():
+			tdcset = 'Ext Start'
+		else:
+			tdcset = 'Free'
+			
+		if self.checkBox_alsbunchtype.isChecked():
+			alsset = 'multi'
+		else:
+			alsset = '2B'
+		
 		if os.path.isfile(self.currpath):
-			self.raw2d, self.dfspec = loadh5data_file(self.currpath)
+			self.raw2d, self.dfspec = loadh5data_file(self.currpath, tdcsetting=tdcset ,alsbunchtype=alsset)
 			self.psarray = np.array([0])
 			self.vargout = (np.array([0]), np.array([0]))
 			
 		elif os.path.isdir(self.currpath):
-			self.raw2dlist, self.dfspeclist, self.psarray, self.vargout = loadh5data_folder(self.currpath)
+			self.raw2dlist, self.dfspeclist, self.psarray, self.vargout = loadh5data_folder(self.currpath, tdcsetting=tdcset ,alsbunchtype=alsset)
 			# self.PSval
 			self.raw2d = self.raw2dlist[2]
 			self.dfspec = self.dfspeclist[2]

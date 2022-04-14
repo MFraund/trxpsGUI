@@ -120,7 +120,7 @@ def loadh5data_file(h5path, loadsaved = True, tdcsetting = 'Free', alsbunchtype 
 	return raw2d, dfspec
 
 
-def loadh5data_folder(folderpath, tdcsetting = 'Free'):
+def loadh5data_folder(folderpath, tdcsetting = 'Free', alsbunchsetting = 'multi'):
 	filelist = glob.glob(os.path.join(folderpath,'*.h5'))
 	numfiles = len(filelist)
 
@@ -138,7 +138,7 @@ def loadh5data_folder(folderpath, tdcsetting = 'Free'):
 		psarray[file] = psval
 		
 		
-		raw2dspec, dfspec = loadh5data_file(filelist[file])
+		raw2dspec, dfspec = loadh5data_file(filelist[file], tdcsetting=tdcsetting, alsbunchsetting=alsbunchsetting)
 		dfspeclist.append(dfspec)
 		raw2dspeclist.append(raw2dspec)
 		

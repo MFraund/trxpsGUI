@@ -208,6 +208,7 @@ class GUI_Window(QMainWindow):
 						
 				if itemrow == 0:
 					self.list_select(itemrow)
+# 					self.listWidget_runs.setCurrentRow(itemrow)
 					
 			except:
 				self.statusBar().showMessage('Error Loading')
@@ -223,8 +224,6 @@ class GUI_Window(QMainWindow):
 	def change_PSval(self):
 		
 		self.PSval= np.abs(self.spinBox_PSval.value() - self.psarray).argmin()
-		print(self.PSval)
-		print(self.psarray[self.PSval])
 		self.spinBox_PSval.setValue(int(self.psarray[self.PSval]))
 		self.update_tab_bunches()
 # 		self.raw2d = self.raw2dlist[self.PSval]

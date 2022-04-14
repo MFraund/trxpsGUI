@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tab_bunches">
      <attribute name="title">
@@ -750,6 +750,38 @@
      </property>
     </widget>
    </widget>
+   <widget class="QCheckBox" name="checkBox_alsbunchtype">
+    <property name="geometry">
+     <rect>
+      <x>175</x>
+      <y>100</y>
+      <width>91</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Multi Bunch</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBox_tdctype">
+    <property name="geometry">
+     <rect>
+      <x>90</x>
+      <y>100</y>
+      <width>76</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::StrongFocus</enum>
+    </property>
+    <property name="text">
+     <string>Ext Start</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -757,7 +789,7 @@
      <x>0</x>
      <y>0</y>
      <width>1874</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>

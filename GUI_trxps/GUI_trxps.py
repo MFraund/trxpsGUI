@@ -17,7 +17,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QSizePolicy
 from PyQt5.QtWidgets import QFileDialog, QDialog
 from PyQt5.QtWidgets import QPushButton, QListWidget, QSpinBox, QTextEdit
 from PyQt5.QtWidgets import QLabel, QRadioButton, QGroupBox, QLineEdit
-from PyQt5.QtWidgets import QTabWidget, QFrame, QMenu
+from PyQt5.QtWidgets import QTabWidget, QFrame, QMenu, QCheckBox
 # from PyQt5.QtWidgets import QFrame
 from PyQt5.QtGui import QIcon, QMouseEvent
 from PyQt5.QtCore import pyqtSlot, QTimer, Qt, QEvent, QPoint, QSettings
@@ -70,6 +70,9 @@ class GUI_Window(QMainWindow):
 		self.spinBox_run = self.findChild(QSpinBox, 'spinBox_run')
 		self.lineEdit_WorkingDir = self.findChild(QLineEdit, 'lineEdit_WorkingDir')
 		self.lineEdit_WorkingDir.setText(self.settings.value('WorkingDir_text',type = str))
+		
+# 		self.checkBox_extstart = self.findChild(QCheckBox, 'checkBox_tdctype')
+# 		self.checkBox_alsbunchtype = self.findChild(QCheckBox, 'checkBox_alsbunchtype')
 		
 		
 		
@@ -256,7 +259,7 @@ class GUI_Window(QMainWindow):
 		
 	@pyqtSlot()
 	def update_tab_bunches(self):
-		print(self.PSval)
+# 		print(self.PSval)
 # 		self.init_figcanvas()
 		
 		#Giving each frame instance access to data

@@ -17,7 +17,7 @@ from findpeaks import findpeaks
 import glob
 import pickle
 
-def loadh5data_file(h5path, loadsaved = True, tdcsetting = 'Free', alsbunchtype = 'multi'):
+def loadh5data_file(h5path, loadsaved = True, tdcsetting = 'Ext Start', alsbunchtype = '2B'):
 	#%% Loading h5 file to dataframe
 	
 	barepath, h5ext = os.path.splitext(h5path)
@@ -98,9 +98,9 @@ def loadh5data_file(h5path, loadsaved = True, tdcsetting = 'Free', alsbunchtype 
 	fp = findpeaks(lookahead = 1, interpolate = 5, method='topology', verbose=0)
 	results = fp.fit(bunchpattern)
 	
-	if alsbunchtype == 'multi':
+	if alsbunchtype == '2B':
 		peak_idxs = results['df'].score.nlargest(24).sort_index()
-	elif alsbunchtype  == 'free':
+	elif alsbunchtype  == 'multi':
 		peak_idxs = results['df'].score.nlargest(12).sort_index()
 	# peak_idxs = peak_tup[0]
 	
@@ -120,7 +120,7 @@ def loadh5data_file(h5path, loadsaved = True, tdcsetting = 'Free', alsbunchtype 
 	return raw2d, dfspec
 
 
-def loadh5data_folder(folderpath, tdcsetting = 'Free', alsbunchsetting = 'multi'):
+def loadh5data_folder(folderpath, tdcsetting = 'Ext Start', alsbunchtype = '2B'):
 	filelist = glob.glob(os.path.join(folderpath,'*.h5'))
 	numfiles = len(filelist)
 
@@ -138,7 +138,7 @@ def loadh5data_folder(folderpath, tdcsetting = 'Free', alsbunchsetting = 'multi'
 		psarray[file] = psval
 		
 		
-		raw2dspec, dfspec = loadh5data_file(filelist[file], tdcsetting=tdcsetting, alsbunchsetting=alsbunchsetting)
+		raw2dspec, dfspec = loadh5data_file(filelist[file], tdcsetting=tdcsetting, alsbunchtype=alsbunchtype)
 		dfspeclist.append(dfspec)
 		raw2dspeclist.append(raw2dspec)
 		

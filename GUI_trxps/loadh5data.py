@@ -17,10 +17,11 @@ from findpeaks import findpeaks
 import glob
 import pickle
 
-def loadh5data_file(h5path, loadsaved = True, tdcsetting = 'Ext Start', alsbunchtype = '2B'):
+def loadh5data_file(h5path, loadsaved = True, tdcsetting = 'Ext Start', alsbunchtype = '2B', autoplot = False):
 	#%% Loading h5 file to dataframe
 	
 	barepath, h5ext = os.path.splitext(h5path)
+	filetitle = os.path.split(barepath)[1]
 	picklepath = barepath + '_pickle'
 	
 	if os.path.exists(picklepath) and loadsaved == True:
@@ -55,7 +56,7 @@ def loadh5data_file(h5path, loadsaved = True, tdcsetting = 'Ext Start', alsbunch
 	# num TDC steps per frame = 7.877664 / 0.0000274 
 	
 	num_TDC_steps = 7.877664 / (TDC_res_empirical/1e6)
-	bin_width = 1e3 # steps/bin
+	bin_width = 2e2 # steps/bin
 	num_bins = num_TDC_steps / bin_width #
 	
 	bin_tres_ps = bin_width * TDC_res_empirical # ps/bin???
@@ -116,7 +117,14 @@ def loadh5data_file(h5path, loadsaved = True, tdcsetting = 'Ext Start', alsbunch
 	with open(picklepath, mode='wb') as f:
 		pickle.dump(vardict, f)
 # 		f.write(json.dumps(vardict))
-		
+	if autoplot == True:
+		fig, axh = plt.subplots()
+		plt.plot(raw2d.mean(axis=1))
+		plt.title(h5ext)
+		plt.xlabel('DLD Channels')
+		plt.ylabel('Intensity')
+		plt.show()
+	
 	return raw2d, dfspec
 
 
